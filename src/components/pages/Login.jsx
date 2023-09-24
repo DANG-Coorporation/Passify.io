@@ -1,19 +1,33 @@
 import { Link, useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import { useFormik } from "formik";
+import { loginValidationSchema } from "../../app/loginValidationSchema";
+import jwt from "jsonwebtoken"
+// import { constants } from "../../data/constants";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: loginValidationSchema,
+    onSubmit: (values) => {
+      console.log(values);
+      // setEmail
+    },
+  });
 
-  const submitLogin = () => {
-    if (email && password) {
-      localStorage.setItem('id', JSON.stringify(true));
-      navigate("/explore");
-    } else {
-      console.log("Fill in the form!");
-    }
-  };
+  // const submitLogin = () => {
+  //   if (email && password) {
+  //     localStorage.setItem("id", JSON.stringify(true));
+  //     navigate("/explore");
+  //   } else {
+  //     console.log("Fill in the form!");
+  //   }
+  // };
 
   return (
     <section className="relative flex flex-wrap lg:h-screen lg:items-center">
@@ -36,7 +50,10 @@ const Login = () => {
           </p>
         </div>
 
-        <form action="" className="mx-auto mb-0 mt-8 max-w-md space-y-4">
+        <form
+          onSubmit={formik.handleSubmit}
+          className="mx-auto mb-0 mt-8 max-w-md space-y-4"
+        >
           <div>
             <label htmlFor="email" className="sr-only">
               Email
@@ -45,12 +62,15 @@ const Login = () => {
             <div className="relative">
               <input
                 type="email"
+                id="email"
                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
                 placeholder="Enter email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
+                // value={formik.values.email}
+                // onChange={(e) => {
+                //   setEmail(e.target.value);
+                // }}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
 
               <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
@@ -70,6 +90,12 @@ const Login = () => {
                 </svg>
               </span>
             </div>
+
+            {formik.errors.email && formik.touched.email ? (
+              <div className="text-red-700 text-sm mt-1">
+                {formik.errors.email}
+              </div>
+            ) : null}
           </div>
 
           <div>
@@ -80,12 +106,15 @@ const Login = () => {
             <div className="relative">
               <input
                 type="password"
+                id="password"
                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
                 placeholder="Enter password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
+                // value={password}
+                // onChange={(e) => {
+                //   setPassword(e.target.value);
+                // }}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
 
               <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
@@ -111,6 +140,11 @@ const Login = () => {
                 </svg>
               </span>
             </div>
+            {formik.errors.password && formik.touched.password ? (
+              <div className="text-red-700 text-sm mt-1">
+                {formik.errors.password}
+              </div>
+            ) : null}
           </div>
 
           <div className="flex items-center justify-between">
@@ -125,9 +159,9 @@ const Login = () => {
             <button
               type="submit"
               className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white"
-              onClick={submitLogin}
+              // onClick={submitLogin}
             >
-              <Link to="/explore"> Login </Link>
+              Login
             </button>
           </div>
         </form>

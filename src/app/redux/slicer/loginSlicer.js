@@ -38,7 +38,7 @@ const loginSlicer = createSlice({
       if (typeof action.payload === "object") {
         const { status, token } = action.payload;
         if (status === 200) {
-          localStorage.setItem("jwt", token);
+          localStorage.setItem("token", token);
           state.loading = "done";
         } else {
           state.loading = "rejected";

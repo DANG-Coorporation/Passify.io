@@ -1,35 +1,27 @@
-import React, {useState} from 'react'
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaUserCircle, FaCoins } from "react-icons/fa";
-import { NavLink } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-const Navbar = (props) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [user, setUser] = useState(null)
-  const [openMenu, setOpenMenu] = useState(false)
-  const location = useLocation()
-  const navigate = useNavigate()
-  useEffect(()=>{
-    const getData = async() => {
-      const response = await axios.get("http://localhost:3000" + "/users/1")
-      setUser(response.data)
+import { NavLink } from "react-router-dom";
+import { useEffect } from "react";
+import { checkLogin } from "../../utils/checkILogin";
+import { parseToken } from "../../utils/parseToken";
+import { useRef } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setAuthorized } from "../../app/redux/slicer/loginSlicer";
+
+const Navbar = () => {
+  const [openMenu, setOpenMenu] = useState(false);
+  const dispatch = useDispatch();
+  const userData = useRef(null);
+  const isAuthorized = useSelector((state) => state.login.isAuthorized);
+
+  useEffect(() => {
+    if (checkLogin()) {
+      userData.current = parseToken(localStorage.getItem("token"));
+      dispatch(setAuthorized(true));
     }
-    getData()
-  },[])
-  useEffect(()=> {
-    if(localStorage.getItem('id') === "true") {
-      setIsAuthenticated(true)
-    }else{
-      setIsAuthenticated(false)
-    }
-  },[location])
-  const onClickSignUp = () => {
-    localStorage.setItem('id', JSON.stringify(false));
-    navigate('/')
-  }
+  }, [dispatch]);
   return (
     <>
       <header className="bg-white sticky top-0 shadow-md z-20">
@@ -46,7 +38,7 @@ const Navbar = (props) => {
                 <ul className="flex items-center gap-6 text-sm">
                   <li>
                     <div className="text-gray-500 transition hover:text-gray-500/75">
-                    <Link to="/create-event"> Create Event </Link>
+                      <Link to="/create-event"> Create Event </Link>
                     </div>
                   </li>
                   <li>
@@ -58,50 +50,99 @@ const Navbar = (props) => {
               </nav>
 
               <div className="flex items-center gap-4">
-                { !isAuthenticated ?
-                 <div className="sm:flex sm:gap-4">
-                      <NavLink className="rounded-md border-primaryColor border-2 border-solid px-5 py-2 text-sm font-medium text-primaryColor shadow hover:bg-primaryColor hover:text-white hover:shadow-2xl" to="/login"> Login </NavLink>
-                    <div className="hidden sm:flex">
-                        <NavLink className="rounded-md bg-primaryColor px-5 py-2 text-sm font-medium text-white hover:drop-shadow-2xl" to="/Signup"> Sign up </NavLink>
-                    </div>
-                  </div> :
-                <div className="block relative bg-white">
-                  <button className="max-md:visible md:hidden rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75" onClick={()=>setOpenMenu(true)}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                {!isAuthorized ? (
+                  <div className="sm:flex sm:gap-4">
+                    <NavLink
+                      className="rounded-md border-primaryColor border-2 border-solid px-5 py-2 text-sm font-medium text-primaryColor shadow hover:bg-primaryColor hover:text-white hover:shadow-2xl"
+                      to="/login"
                     >
-                      <path d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                  </button>
-                  <FaUserCircle className="max-md:hidden md:visible fill-gray-700 h-8 w-8 cursor-pointer" onClick={()=>setOpenMenu(true)}/>
-                  {openMenu && 
-                  <div className="absolute z-50 w-[250px] top-3/4 right-0 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-xl" onMouseLeave={()=>setOpenMenu(false)}>
-                  <div className="px-4 py-3">
-                    <span className="block text-sm text-gray-900">{user?.name}</span>
-                    <span className="block text-sm text-gray-500 truncate ... hover:text-clip">{user?.email}</span>
-                    <span className="flex items-center text-sm text-gray-500 truncate mt-2"><FaCoins className="mr-2 fill-yellow-600"/>{user.points}</span>
+                      Login
+                    </NavLink>
+                    <div className="hidden sm:flex">
+                      <NavLink
+                        className="rounded-md bg-primaryColor px-5 py-2 text-sm font-medium text-white hover:drop-shadow-2xl"
+                        to="/Signup"
+                      >
+                        Sign up
+                      </NavLink>
+                    </div>
                   </div>
-                  <ul className="py-2" aria-labelledby="user-menu-button">
-                    <li>
-                      <Link to="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</Link>
-                    </li>
-                    <li>
-                      <Link to="/order-list" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Orders</Link>
-                    </li>
-                    <li>
-                      <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</Link>
-                    </li>
-                    <li>
-                      <Link to="/" onClick={()=>onClickSignUp()} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</Link>
-                    </li>
-                  </ul>
-                  </div>}
-                </div>
-                }
+                ) : (
+                  <div className="block relative bg-white">
+                    <button
+                      className="max-md:visible md:hidden rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75"
+                      onClick={() => setOpenMenu(true)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path d="M4 6h16M4 12h16M4 18h16" />
+                      </svg>
+                    </button>
+                    <FaUserCircle
+                      className="max-md:hidden md:visible fill-gray-700 h-8 w-8 cursor-pointer"
+                      onClick={() => setOpenMenu(true)}
+                    />
+                    {openMenu && (
+                      <div
+                        className="absolute z-50 w-[250px] top-3/4 right-0 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-xl"
+                        onMouseLeave={() => setOpenMenu(false)}
+                      >
+                        <div className="px-4 py-3">
+                          <span className="block text-sm text-gray-900">
+                            {userData.current.name}
+                          </span>
+                          <span className="block text-sm text-gray-500 truncate ... hover:text-clip">
+                            {userData.current.email}
+                          </span>
+                          <span className="flex items-center text-sm text-gray-500 truncate mt-2">
+                            <FaCoins className="mr-2 fill-yellow-600" />
+                            {0}
+                          </span>
+                        </div>
+                        <ul className="py-2" aria-labelledby="user-menu-button">
+                          <li>
+                            <Link
+                              to="/dashboard"
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              Dashboard
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              to="/order-list"
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              Orders
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              to="#"
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              Settings
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              to="/"
+                              // onClick={}
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              Sign out
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

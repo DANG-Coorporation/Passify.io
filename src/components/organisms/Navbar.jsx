@@ -3,27 +3,25 @@ import { Link } from "react-router-dom";
 import { FaUserCircle, FaCoins } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import { checkLogin } from "../../utils/checkILogin";
 import { parseToken } from "../../utils/parseToken";
 import { useRef } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setAuthorized } from "../../app/redux/slicer/loginSlicer";
+
 const Navbar = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const userData = useRef(null);
-  // const isAuthorized = useSelector((state) => state.login.isAuthorized);
+  const isAuthorized = useSelector((state) => state.login.isAuthorized);
 
   useEffect(() => {
     if (checkLogin()) {
-      console.log(localStorage.getItem("token"));
       userData.current = parseToken(localStorage.getItem("token"));
-      console.log(userData.current);
-      setIsAuthenticated(true);
+      dispatch(setAuthorized(true));
     }
-  }, []);
+  }, [dispatch]);
   return (
     <>
       <header className="bg-white sticky top-0 shadow-md z-20">
@@ -52,22 +50,20 @@ const Navbar = () => {
               </nav>
 
               <div className="flex items-center gap-4">
-                {!isAuthenticated ? (
+                {!isAuthorized ? (
                   <div className="sm:flex sm:gap-4">
                     <NavLink
                       className="rounded-md border-primaryColor border-2 border-solid px-5 py-2 text-sm font-medium text-primaryColor shadow hover:bg-primaryColor hover:text-white hover:shadow-2xl"
                       to="/login"
                     >
-                      {" "}
-                      Login{" "}
+                      Login
                     </NavLink>
                     <div className="hidden sm:flex">
                       <NavLink
                         className="rounded-md bg-primaryColor px-5 py-2 text-sm font-medium text-white hover:drop-shadow-2xl"
                         to="/Signup"
                       >
-                        {" "}
-                        Sign up{" "}
+                        Sign up
                       </NavLink>
                     </div>
                   </div>
@@ -98,10 +94,10 @@ const Navbar = () => {
                       >
                         <div className="px-4 py-3">
                           <span className="block text-sm text-gray-900">
-                            {user?.name}
+                            {userData.current.name}
                           </span>
                           <span className="block text-sm text-gray-500 truncate ... hover:text-clip">
-                            {user?.email}
+                            {userData.current.email}
                           </span>
                           <span className="flex items-center text-sm text-gray-500 truncate mt-2">
                             <FaCoins className="mr-2 fill-yellow-600" />
@@ -136,7 +132,7 @@ const Navbar = () => {
                           <li>
                             <Link
                               to="/"
-                              onClick={() => onClickSignUp()}
+                              // onClick={}
                               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                               Sign out

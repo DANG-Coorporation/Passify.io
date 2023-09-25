@@ -36,18 +36,14 @@ const loginSlicer = createSlice({
 
     builder.addCase(userLogin.fulfilled, (state, action) => {
       if (typeof action.payload === "object") {
-        console.log(action.payload);
         const { status, token } = action.payload;
-        console.log(status);
         if (status === 200) {
           localStorage.setItem("jwt", token);
           state.loading = "done";
         } else {
-          console.log("here bro");
           state.loading = "rejected";
         }
       } else {
-        console.log("here ges");
         state.loading = "rejected";
       }
     });

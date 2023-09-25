@@ -48,15 +48,6 @@ const Login = () => {
     }
   }, [apiState, dispatch, navigate]);
 
-  // const submitLogin = () => {
-  //   if (email && password) {
-  //     localStorage.setItem("id", JSON.stringify(true));
-  //     navigate("/explore");
-  //   } else {
-  //     console.log("Fill in the form!");
-  //   }
-  // };
-
   return (
     <section className="flex-col lg:h-screen lg:items-center relative h-full">
       <div className="w-full flex flex-wrap lg:h-screen lg:items-center">

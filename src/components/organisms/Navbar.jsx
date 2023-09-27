@@ -21,7 +21,7 @@ const Navbar = () => {
       userData.current = parseToken(localStorage.getItem("token"));
       dispatch(setAuthorized(true));
     }
-  }, [dispatch]);
+  }, [dispatch, isAuthorized]);
   return (
     <>
       <header className="bg-white sticky top-0 shadow-md z-20">

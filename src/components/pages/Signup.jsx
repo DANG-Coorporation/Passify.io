@@ -3,13 +3,18 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import signupValidationSchema from "../../app/signupValidationSchema";
 import { VisibilityButton } from "../atoms/visibilityButton";
+import { useDispatch, useSelector } from "react-redux";
+import Toast from "../molecules/Toast";
+import { userSignup } from "../../app/redux/slicer/signupSlicer";
+import { useEffect } from "react";
 
 const SignUp = () => {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passVisibility, setPassVisibility] = useState(false);
+  const [confPassVisibility, setConfPassVisibility] = useState(false);
+  const [isToast, setToast] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const apiState = useSelector((state) => state.signup.loading);
   const formik = useFormik({
     initialValues: {
       fullName: "",
@@ -18,22 +23,26 @@ const SignUp = () => {
       confirmPassword: "",
     },
     validationSchema: signupValidationSchema,
-    onSubmit: (value) => {
-      console.log(value);
+    onSubmit: (values) => {
+      console.log(values);
+      dispatch(
+        userSignup({
+          name: values.fullName,
+          email: values.email,
+          password: values.password,
+        })
+      );
     },
   });
 
-  const submitSignup = () => {
-    if (fullName && email && password && confirmPassword) {
-      if (password === confirmPassword) {
-        navigate("/choose-role");
-      } else {
-        console.log("Password not match!");
-      }
-    } else {
-      console.log("Fill the form!");
+  useEffect(() => {
+    console.log(apiState);
+    if (apiState === "done") {
+      navigate("/login");
+    } else if (apiState === "rejected") {
+      setToast(true);
     }
-  };
+  }, [apiState, dispatch, navigate]);
 
   return (
     <section className="relative flex flex-wrap lg:h-screen lg:items-center">
@@ -97,7 +106,6 @@ const SignUp = () => {
                 type="email"
                 id="email"
                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                // value={email}
                 placeholder="Enter email"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -112,25 +120,35 @@ const SignUp = () => {
           </div>
 
           <div>
-            <label htmlFor="Password" className="sr-only">
+            <label htmlFor="password" className="sr-only">
               Password
             </label>
 
             <div className="relative">
               <input
-                type="password"
+                type={passVisibility ? "text" : "password"}
+                id="password"
                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                value={password}
                 placeholder="Enter password"
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
 
               <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
-                <VisibilityButton/>
+                <VisibilityButton
+                  isVisible={passVisibility}
+                  onClick={() => {
+                    setPassVisibility(!passVisibility);
+                  }}
+                />
               </span>
             </div>
+
+            {formik.errors.password && formik.touched.password ? (
+              <div className="text-red-700 text-sm mt-1">
+                {formik.errors.password}
+              </div>
+            ) : null}
           </div>
 
           <div>
@@ -140,38 +158,29 @@ const SignUp = () => {
 
             <div className="relative">
               <input
-                type="password"
+                type={confPassVisibility ? "text" : "password"}
+                id="confirmPassword"
                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                value={confirmPassword}
                 placeholder="Confirm password"
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                }}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
 
               <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
+                <VisibilityButton
+                  isVisible={confPassVisibility}
+                  onClick={() => {
+                    setConfPassVisibility(!confPassVisibility);
+                  }}
+                />
               </span>
             </div>
+
+            {formik.errors.confirmPassword && formik.touched.confirmPassword ? (
+              <div className="text-red-700 text-sm mt-1">
+                {formik.errors.confirmPassword}
+              </div>
+            ) : null}
           </div>
 
           <div className="flex items-center justify-between">
@@ -186,13 +195,21 @@ const SignUp = () => {
             <button
               type="submit"
               className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white"
-              onClick={submitSignup}
+              // onClick={submitSignup}
             >
-              <Link to="/choose-role"> Sign Up </Link>
+              Sign Up
             </button>
           </div>
         </form>
       </div>
+      {isToast ? (
+        <Toast
+          header={"SignUp Failed"}
+          caption={"Email already registered"}
+          variant={"error"}
+          dismissHandle={setToast}
+        />
+      ) : null}
     </section>
   );
 };

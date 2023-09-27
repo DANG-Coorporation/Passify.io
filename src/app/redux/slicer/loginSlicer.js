@@ -28,6 +28,9 @@ const loginSlicer = createSlice({
     setRespond: (state, action) => {
       state.respond = action.payload;
     },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(userLogin.pending, (state) => {
@@ -50,5 +53,5 @@ const loginSlicer = createSlice({
   },
 });
 
-export const { setAuthorized, setRespond } = loginSlicer.actions;
+export const { setAuthorized, setRespond, setLoading } = loginSlicer.actions;
 export default loginSlicer.reducer;

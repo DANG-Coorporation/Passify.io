@@ -5,7 +5,7 @@ import { loginValidationSchema } from "../../app/loginValidationSchema";
 import Toast from "../molecules/Toast";
 // import { constants } from "../../data/constants";
 import { useDispatch, useSelector } from "react-redux";
-import { userLogin } from "../../app/redux/slicer/loginSlicer";
+import { setLoading, userLogin } from "../../app/redux/slicer/loginSlicer";
 import { useState } from "react";
 import { VisibilityButton } from "../atoms/visibilityButton";
 import { useEffect } from "react";
@@ -38,10 +38,10 @@ const Login = () => {
   });
 
   useEffect(() => {
-    console.log(apiState);
     if (apiState === "done") {
       console.log("authorized");
       dispatch(setAuthorized(true));
+      dispatch(setLoading("idle"));
       navigate("/");
     } else if (apiState === "rejected") {
       setToast(true);

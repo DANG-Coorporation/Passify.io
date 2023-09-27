@@ -9,15 +9,17 @@ import { useRef } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setAuthorized } from "../../app/redux/slicer/loginSlicer";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const userData = useRef(null);
   const isAuthorized = useSelector((state) => state.login.isAuthorized);
 
   useEffect(() => {
-    if (checkLogin()) {
+    if (checkLogin() && isAuthorized) {
       userData.current = parseToken(localStorage.getItem("token"));
       dispatch(setAuthorized(true));
     }
@@ -131,8 +133,11 @@ const Navbar = () => {
                           </li>
                           <li>
                             <Link
-                              to="/"
-                              // onClick={}
+                              onClick={() => {
+                                localStorage.removeItem("token");
+                                dispatch(setAuthorized(false));
+                                navigate("/");
+                              }}
                               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                               Sign out

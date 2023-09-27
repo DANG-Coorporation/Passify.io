@@ -9,17 +9,17 @@ import { useRef } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setAuthorized } from "../../app/redux/slicer/loginSlicer";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const userData = useRef(null);
   const isAuthorized = useSelector((state) => state.login.isAuthorized);
 
   useEffect(() => {
-    if (checkLogin() && isAuthorized) {
+    if (checkLogin()) {
       userData.current = parseToken(localStorage.getItem("token"));
       dispatch(setAuthorized(true));
     }
@@ -30,9 +30,9 @@ const Navbar = () => {
         <div className="mx-auto container px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex-1 md:flex md:items-center md:gap-12">
-              <a className="block text-black w-fit" href="/">
+              <Link className="block text-black w-fit" to="/">
                 <h2 className="font-bold text-3xl">PASSIFY</h2>
-              </a>
+              </Link>
             </div>
 
             <div className="md:flex md:items-center md:gap-12">
@@ -136,11 +136,11 @@ const Navbar = () => {
                           </li>
                           <li>
                             <Link
+                              to={"/"}
                               onClick={() => {
                                 localStorage.removeItem("token");
                                 dispatch(setAuthorized(false));
                                 setOpenMenu(false);
-                                navigate("/");
                               }}
                               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >

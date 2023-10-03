@@ -38,8 +38,11 @@ const Login = () => {
   });
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  });
+
+  useEffect(() => {
     if (apiState === "done") {
-      console.log("authorized");
       dispatch(setAuthorized(true));
       dispatch(setLoading("idle"));
       navigate("/");

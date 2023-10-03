@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { fetchEventById } from "../../app/redux/slicer/eventSlicer";
+import { useNavigate } from "react-router-dom";
 const EventDetail = () => {
   const dispatch = useDispatch();
   const eventDetails = useSelector((state) => state.event.event);
 
   const params = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchEventById(params.id));
@@ -79,10 +81,13 @@ const EventDetail = () => {
                   </div>
                 </dl>
               </div>
-              <button className="bg-primaryColor text-white rounded-lg py-2 px-28 hover:shadow-2xl mt-9">
-                <Link to={`/events/${eventDetails.id}/registration`}>
-                  Beli Tiket
-                </Link>
+              <button
+                className="bg-primaryColor text-white rounded-lg py-2 px-28 hover:shadow-2xl mt-9"
+                onClick={() => {
+                  navigate(`/events/${eventDetails.id}/registration`);
+                }}
+              >
+                Beli Tiket
               </button>
             </div>
           </div>

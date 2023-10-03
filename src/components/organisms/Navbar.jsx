@@ -9,7 +9,7 @@ import { useRef } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setAuthorized } from "../../app/redux/slicer/loginSlicer";
-// import { useNavigate } from "react-router-dom";
+import { resetDashboard } from "../../app/redux/slicer/dahshboardSlicer";
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(false);
@@ -137,10 +137,15 @@ const Navbar = () => {
                           <li>
                             <Link
                               to={"/"}
-                              onClick={() => {
-                                localStorage.removeItem("token");
-                                dispatch(setAuthorized(false));
-                                setOpenMenu(false);
+                              onClick={async () => {
+                                try {
+                                  localStorage.removeItem("token");
+                                  await dispatch(setAuthorized(false));
+                                  setOpenMenu(false);
+                                  await dispatch(resetDashboard());
+                                } catch (e) {
+                                  console.log(e);
+                                }
                               }}
                               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >

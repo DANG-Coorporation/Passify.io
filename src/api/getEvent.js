@@ -1,11 +1,7 @@
 import server from "./apiSettings";
 
 const getEvent = () => {
-  return server.get("/events", {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+  return server.get("/events");
 };
 
 export default getEvent;

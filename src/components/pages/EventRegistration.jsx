@@ -22,6 +22,7 @@ const EventRegistration = () => {
   const [code, setCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [discountVal, setDiscountVal] = useState(0);
+  const [finalBill, setFinalBill] = useState(0);
   const [promoId, setPromoId] = useState(0);
   const [isToast, setToast] = useState(false);
   const [apiResponse, setResponse] = useState({});
@@ -57,6 +58,7 @@ const EventRegistration = () => {
           name: values.fullName,
           buy_date: moment().format(),
           isTransactionCompleted: false,
+          bill: finalBill,
         });
         setResponse(await res.data);
         setTimeout(() => {
@@ -79,7 +81,10 @@ const EventRegistration = () => {
 
   useEffect(() => {
     setDiscountVal(calculateDiscount(eventDetail.price, discount));
-  }, [discount, eventDetail]);
+    setFinalBill(
+      calculatePrice(eventDetail.price, discountVal, formik.values.qty)
+    );
+  }, [discount, eventDetail, discountVal, formik.values.qty]);
 
   useEffect(() => {
     if (apiResponse.status) {
@@ -236,6 +241,9 @@ const EventRegistration = () => {
                               setDiscount(0);
                               setDiscountVal(0);
                               setPromoId(0);
+                              setFinalBill(
+                                calculatePrice(eventDetail.price, 0, 1)
+                              );
                             }
                             setCode(event.target.value);
                           }}
@@ -298,11 +306,7 @@ const EventRegistration = () => {
                         </p>
                         <p className="text-primaryColor font-bold text-2xl">
                           {eventDetail?.price > 0
-                            ? `IDR ${calculatePrice(
-                                eventDetail.price,
-                                discountVal,
-                                formik.values.qty
-                              ).toLocaleString("id-ID")}`
+                            ? `IDR ${finalBill.toLocaleString("id-ID")}`
                             : "Free"}
                         </p>
                       </div>

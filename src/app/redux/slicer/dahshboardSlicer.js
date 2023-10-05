@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import getDashboardDetail from "../../../api/getDashboardDetail";
+import { getDashboardDetail } from "../../../api/getDashboardDetail";
 import { AxiosError } from "axios";
 
 export const fetchDashboardDetail = createAsyncThunk(

@@ -1,6 +1,6 @@
 import server from "./apiSettings";
 
-const getDashboardDetail = (userId) => {
+export const getDashboardDetail = (userId) => {
   return server.get(`/dashboard/${userId}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -8,4 +8,13 @@ const getDashboardDetail = (userId) => {
   });
 };
 
-export default getDashboardDetail;
+export const getTransactionDashboard = (event_id = 0) => {
+  return server.get(`/dashboard/event-details`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    params: {
+      event_id: event_id,
+    },
+  });
+};

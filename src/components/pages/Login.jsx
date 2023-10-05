@@ -67,8 +67,8 @@ const Login = () => {
             <h1 className="text-2xl font-bold sm:text-3xl"> Welcome Back! </h1>
 
             <p className="mt-4 text-gray-500">
-              Welcome back! We're thrilled to have you here. Please log in to
-              access your account and unlock a world of exciting event
+              Welcome back! {"We're"} thrilled to have you here. Please log in
+              to access your account and unlock a world of exciting event
               experiences.
             </p>
           </div>

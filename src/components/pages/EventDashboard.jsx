@@ -10,6 +10,8 @@ import { fetchDashboardDetail } from "../../app/redux/slicer/dahshboardSlicer";
 import { parseToken } from "../../utils/parseToken";
 import getEventByUserId from "../../api/getEventByUserId";
 import { checkLogin } from "../../utils/checkILogin";
+import isEventActive from "../../utils/isEventActive";
+import moment from "moment";
 
 const EventDasboard = () => {
   const navigate = useNavigate();
@@ -141,12 +143,12 @@ const EventDasboard = () => {
                       /{data.quota}
                     </span>
                   </p>
-                  {/* <p className="flex flex-col font-regular w-full pl-4 max-sm:p-1 max-sm:text-sm">
+                  <p className="flex flex-col font-regular w-full pl-4 max-sm:p-1 max-sm:text-sm">
                   Status
                   <span className="w-fit font-semibold">
-                    {data.eventStatus ? "Active" : "End"}
+                    {isEventActive(moment(), moment(data.end_date, "DD-MM-YYYY HH-mm-ss")) ? "Active" : "End"}
                   </span>
-                </p> */}
+                </p>
                 </div>
               );
             })
@@ -157,7 +159,6 @@ const EventDasboard = () => {
               </span>
             </div>
           )}
-          {}
         </div>
       </div>
     </Container>

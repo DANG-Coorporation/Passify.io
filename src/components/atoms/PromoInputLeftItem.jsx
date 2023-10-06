@@ -22,7 +22,6 @@ const generateChild = (status) => {
             fill="currentFill"
           />
         </svg>
-        <span className="sr-only">Loading...</span>
       </div>
     );
   } else if (status === "done") {

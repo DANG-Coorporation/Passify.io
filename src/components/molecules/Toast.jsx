@@ -24,7 +24,7 @@ const Toast = ({ header, caption, variant, dismissHandle }) => {
         !isDismissed ? "animate-toast-slideIn" : "animate-toast-slideOut"
       } rounded-xl border border-gray-100 ${
         variant === "error" ? "bg-red-50" : "bg-white"
-      } p-4 w-96 absolute top-full right-2 lg:top-2 shadow-md transition-all duration-150 `}
+      } p-4 w-96 fixed top-16 sm:top-3/4 right-3 lg:top-16 shadow-md transition-all duration-150 z-10 mt-2`}
     >
       <div className="flex items-start gap-4">
         <span

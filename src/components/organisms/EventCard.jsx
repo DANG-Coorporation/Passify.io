@@ -16,7 +16,7 @@ const EventCard = ({ data }) => {
       />
       <div className="flex flex-col p-4 gap-y-2">
         <p className="font-medium text-primaryColor text-xl">{price}</p>
-        <p className="font-semibold text-black">{data?.eventName}</p>
+        <p className="font-semibold text-black">{data?.event_name}</p>
         <p>{date}</p>
         <p>{data?.event_place}</p>
         <p>{data?.location}</p>

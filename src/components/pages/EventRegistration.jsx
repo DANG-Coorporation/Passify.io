@@ -15,7 +15,6 @@ import postTransaction from "../../api/postTransaction";
 import { parseToken } from "../../utils/parseToken";
 import moment from "moment/moment";
 import Toast from "../molecules/Toast";
-
 const EventRegistration = () => {
   const eventDetail = useSelector((state) => state.event.event);
   const [apiState, setApiState] = useState("idle");
@@ -29,6 +28,30 @@ const EventRegistration = () => {
   const dispatch = useDispatch();
   const param = useParams();
   const navigate = useNavigate();
+
+  const createTrnsaction = async (values) => {
+    const user = parseToken(localStorage.getItem("token"));
+    try {
+      const res = await postTransaction({
+        user_id: user.id,
+        event_id: param.id,
+        promotion_id: promoId < 1 ? null : promoId,
+        email: values.email,
+        qty: values.qty,
+        name: values.fullName,
+        buy_date: moment().format(),
+        isTransactionCompleted: false,
+        bill: finalBill,
+      });
+      setResponse(await res.data);
+      setTimeout(() => {
+        navigate("/order-list");
+      }, 3000);
+    } catch (e) {
+      console.log(e.response.data);
+      setResponse(e.response.data);
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -47,27 +70,7 @@ const EventRegistration = () => {
         .required("Required"),
     }),
     onSubmit: async (values) => {
-      const user = parseToken(localStorage.getItem("token"));
-      try {
-        const res = await postTransaction({
-          user_id: user.id,
-          event_id: param.id,
-          promotion_id: promoId < 1 ? null : promoId,
-          email: values.email,
-          qty: values.qty,
-          name: values.fullName,
-          buy_date: moment().format(),
-          isTransactionCompleted: false,
-          bill: finalBill,
-        });
-        setResponse(await res.data);
-        setTimeout(() => {
-          navigate("/order-list");
-        }, 3000);
-      } catch (e) {
-        console.log(e.response.data);
-        setResponse(e.response.data);
-      }
+      createTrnsaction(values);
     },
   });
 

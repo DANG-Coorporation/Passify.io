@@ -3,15 +3,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchEventById } from "../../app/redux/slicer/eventSlicer";
 import { useNavigate } from "react-router-dom";
+import { checkLogin } from "../../utils/checkILogin";
+import { getBookPermission } from "../../app/redux/slicer/transactionSlicer";
+import { parseToken } from "../../utils/parseToken";
+import Loading from "../atoms/loading";
 const EventDetail = () => {
   const dispatch = useDispatch();
   const eventDetails = useSelector((state) => state.event.event);
+  const isPermitted = useSelector((state) => state.transaction.isPermitted);
+  const isOwner = useSelector((state) => state.transaction.isOwner);
+  const apiState = useSelector((state) => state.transaction.loading);
 
   const params = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchEventById(params.id));
+    if (checkLogin()) {
+      dispatch(
+        getBookPermission({
+          user_id: parseToken(localStorage.getItem("token")).id,
+          event_id: params.id,
+        })
+      );
+    }
   }, [dispatch, params]);
 
   return (
@@ -82,13 +97,31 @@ const EventDetail = () => {
                 </dl>
               </div>
               <button
-                className="bg-primaryColor text-white rounded-lg py-2 px-28 hover:shadow-2xl mt-9"
+                disabled={!isPermitted || apiState === "pending"}
+                className={`${
+                  isPermitted
+                    ? "bg-primaryColor"
+                    : "bg-gray-300 hover:cursor-not-allowed hover:shadow-none"
+                } text-white rounded-lg py-2 px-28 hover:shadow-2xl mt-9 min-w-48 w-50 `}
                 onClick={() => {
-                  navigate(`/events/${eventDetails.id}/registration`);
+                  if (checkLogin()) {
+                    navigate(`/events/${eventDetails.id}/registration`);
+                  } else {
+                    navigate("/login", { state: { login: false } });
+                  }
                 }}
               >
-                Beli Tiket
+                {apiState === "pending" ? <Loading size={5} /> : "Beli tiket"}
               </button>
+              {!isPermitted ? (
+                <div className="mt-2 text-red-700">
+                  <span>
+                    {isOwner
+                      ? "You are the event organizer, only user who aren't organizer can book"
+                      : "You have already booked this event, user can only book for once"}
+                  </span>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import postLogin from "../../../api/login";
+import { AxiosError } from "axios";
 
 export const userLogin = createAsyncThunk(
   "loginSlicer/login",
@@ -9,7 +10,11 @@ export const userLogin = createAsyncThunk(
       const data = await res.data;
       return data;
     } catch (e) {
-      return e.toString();
+      if (e instanceof AxiosError) {
+        return e.response.data;
+      } else {
+        return e.toString();
+      }
     }
   }
 );
@@ -38,17 +43,19 @@ const loginSlicer = createSlice({
     });
 
     builder.addCase(userLogin.fulfilled, (state, action) => {
-      if (typeof action.payload === "object") {
-        const { status, token } = action.payload;
-        if (status === 200) {
-          localStorage.setItem("token", token);
-          state.loading = "done";
-        } else {
-          state.loading = "rejected";
-        }
+      const { status, token } = action.payload;
+      if (status === 200) {
+        localStorage.setItem("token", token);
+        state.loading = "done";
       } else {
+        state.respond = action.payload;
         state.loading = "rejected";
       }
+    });
+
+    builder.addCase(userLogin.rejected, (state, action) => {
+      state.loading = "done";
+      state.respond = action.payload;
     });
   },
 });

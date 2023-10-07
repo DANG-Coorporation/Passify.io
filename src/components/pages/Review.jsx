@@ -19,9 +19,9 @@ export default function Review() {
         const param = { transaction_id: parseInt(params.orderId) };
         const response = await getReview(param);
         setDataReview(response.data);
-        if(response.data !== null){
-          setNumber(response.data.star)
-          setComment(response.data.comment)
+        if (response.data !== null) {
+          setNumber(response.data.star);
+          setComment(response.data.comment);
         }
       } catch (e) {
         console.log(e);
@@ -47,7 +47,6 @@ export default function Review() {
         return "Evaluate";
     }
   };
-  console.log(dataReview)
   const handlePlaceHolder = () => {
     switch (number || hoverStar) {
       case 0:
@@ -70,26 +69,24 @@ export default function Review() {
     event.preventDefault();
     try {
       const response =
-      dataReview === null
-      ? await postReview({
-        transaction_id: params.orderId,
-        star: number,
-        comment: comment,
-      })
-      : await patchReview({
-        transaction_id: params.orderId,
-        star: number,
-        comment: comment,
+        dataReview === null
+          ? await postReview({
+              transaction_id: params.orderId,
+              star: number,
+              comment: comment,
+            })
+          : await patchReview({
+              transaction_id: params.orderId,
+              star: number,
+              comment: comment,
             });
-        console.log(response)
       if (response.status === 200) {
         setSubmitStatus(response.message);
         setTimeout(() => {
-          navigate("/order-list");
+          navigate(-1);
         }, 2000);
       }
     } catch (e) {
-      console.log(e.response.data.message);
       setSubmitStatus(e.response.data.message);
     }
   };
@@ -98,7 +95,9 @@ export default function Review() {
       <div className="fixed flex items-center justify-center top-0 left-0 right-0 bottom-0 bg-black bg-opacity-25">
         <form onSubmit={handleSubmit}>
           <div className="flex p-5 flex flex-col items-center justify-center bg-white rounded-xl w-[300px] max-h-[50vh] ">
-            <h1 className="text-xl font-bold mb-5">{dataReview ? "Edit Review Only Can Once!" : "Rate us below !"}</h1>
+            <h1 className="text-xl font-bold mb-5">
+              {dataReview ? "Edit Review Only Can Once!" : "Rate us below !"}
+            </h1>
             <div>
               <p>
                 {handleText()}, {handlePlaceHolder()}
@@ -138,9 +137,7 @@ export default function Review() {
             />
             <div>
               {submitStatus !== "" ? (
-                <p className="font-medium">
-                  {submitStatus}
-                </p>
+                <p className="font-medium">{submitStatus}</p>
               ) : (
                 <button
                   type="submit"

@@ -11,7 +11,6 @@ const OrderCard = (props) => {
       return 0
     }
   }
-  console.log(data)
   return (
     <div
       className="flex h-[110px] flex-row items-center overflow-hidden bg-white cursor-pointer rounded-xl my-1.5 mx-0 shadow-lg max-md:h-[210px] max-sm:h-[350px] max-sm:flex-col max-sm:w-full"

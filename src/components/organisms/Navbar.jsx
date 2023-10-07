@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setAuthorized } from "../../app/redux/slicer/loginSlicer";
 import { resetDashboard } from "../../app/redux/slicer/dahshboardSlicer";
+import { resetTransactionState } from "../../app/redux/slicer/transactionSlicer";
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(false);
@@ -143,6 +144,7 @@ const Navbar = () => {
                                   await dispatch(setAuthorized(false));
                                   setOpenMenu(false);
                                   await dispatch(resetDashboard());
+                                  await dispatch(resetTransactionState());
                                 } catch (e) {
                                   console.log(e);
                                 }

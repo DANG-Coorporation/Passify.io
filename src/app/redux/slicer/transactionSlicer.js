@@ -29,6 +29,13 @@ const transactionSlicer = createSlice({
     isPermitted: true,
     isOwner: false,
   },
+  reducers: {
+    resetTransactionState: (state) => {
+      (state.isOwner = false),
+        (state.isPermitted = true),
+        (state.loading = "idle");
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getBookPermission.pending, (state) => {
       state.loading = "pending";
@@ -48,4 +55,5 @@ const transactionSlicer = createSlice({
   },
 });
 
+export const { resetTransactionState } = transactionSlicer.reducer;
 export default transactionSlicer.reducer;

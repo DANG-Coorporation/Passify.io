@@ -8,8 +8,6 @@ export default function Review() {
   const [number, setNumber] = useState(0);
   const [hoverStar, setHoverStar] = useState(undefined);
   const [comment, setComment] = useState("");
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [hideButton, setHideButton] = useState(false);
   const [dataReview, setDataReview] = useState(null);
   const [submitStatus, setSubmitStatus] = useState("");
   const params = useParams();
@@ -21,6 +19,10 @@ export default function Review() {
         const param = { transaction_id: parseInt(params.orderId) };
         const response = await getReview(param);
         setDataReview(response.data);
+        if(response.data !== null){
+          setNumber(response.data.star)
+          setComment(response.data.comment)
+        }
       } catch (e) {
         console.log(e);
       }
@@ -45,7 +47,7 @@ export default function Review() {
         return "Evaluate";
     }
   };
-
+  console.log(dataReview)
   const handlePlaceHolder = () => {
     switch (number || hoverStar) {
       case 0:
@@ -68,17 +70,18 @@ export default function Review() {
     event.preventDefault();
     try {
       const response =
-        dataReview === null
-          ? await postReview({
-              transaction_id: params.orderId,
-              star: number,
-              comment: comment,
-            })
-          : await patchReview({
-              transaction_id: params.orderId,
-              star: number,
-              comment: comment,
+      dataReview === null
+      ? await postReview({
+        transaction_id: params.orderId,
+        star: number,
+        comment: comment,
+      })
+      : await patchReview({
+        transaction_id: params.orderId,
+        star: number,
+        comment: comment,
             });
+        console.log(response)
       if (response.status === 200) {
         setSubmitStatus(response.message);
         setTimeout(() => {
@@ -130,6 +133,7 @@ export default function Review() {
               className="w-full rounded-md p-2 h-40 border min-h-[50px]"
               placeholder="comment here..."
               id="comment"
+              value={comment}
               onChange={(e) => setComment(e.target.value)}
             />
             <div>

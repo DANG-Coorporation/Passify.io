@@ -6,11 +6,12 @@ const OrderCard = (props) => {
   const isEventDone = !props.tabBarSelected;
   const promoCalculation = (promo) => {
     if(promo !== null){
-      return calculateDiscount((data?.qty*data?.Event.price), data?.Promotion.discount)
+      return calculateDiscount((data?.qty*data?.event.price), data?.promotion.discount)
     }else{
       return 0
     }
   }
+  console.log(data)
   return (
     <div
       className="flex h-[110px] flex-row items-center overflow-hidden bg-white cursor-pointer rounded-xl my-1.5 mx-0 shadow-lg max-md:h-[210px] max-sm:h-[350px] max-sm:flex-col max-sm:w-full"
@@ -18,23 +19,23 @@ const OrderCard = (props) => {
     >
       <img
         className="w-2/5 h-full object-cover max-sm:w-full max-sm:h-[150px] max-sm:object-cover"
-        src={data.Event.img}
+        src={data.event?.img}
       />
       <div className="flex justify-between w-3/5 h-full py-3 px-5 max-md:flex-wrap max-md:gap-y-2 max-sm:w-full">
         <div className="flex h-full flex-col justify-between max-md:w-full max-md:justify-start max-md:h-1/2">
-          <p className="font-semibold">{data.Event?.event_name}</p>
+          <p className="font-semibold">{data.event?.event_name}</p>
           <p className="font-medium text-primaryColor">
-            {dateFormat(data.Event?.start_date)}
+            {dateFormat(data.event?.start_date)}
           </p>
           <p>
             {data.qty}pax
-            <span className="ml-5">{currencyFormat(data.Event?.price)}</span>
+            <span className="ml-5">{currencyFormat(data.event?.price)}</span>
           </p>
         </div>
         <div className="flex h-full flex-col justify-between max-md:w-full max-md:justify-start max-md:h-1/2 max-sm:justify-start">
           <p className="font-medium text-primaryColor text-lg">
             {currencyFormat(
-              data?.qty * data?.Event.price -
+              data?.qty * data?.event.price -
                 promoCalculation(data?.promotion_id)
             )}
           </p>

@@ -30,12 +30,11 @@ const OrderDetail = () => {
     },[])
     const promoCalculation = (promo) => {
       if(promo !== null){
-        return calculateDiscount((data?.qty*data?.Event.price), data?.Promotion.discount)
+        return calculateDiscount((data?.qty*data?.event.price), data?.promotion.discount)
       }else{
         return 0
       }
     }
-    console.log(data?.review[0]?.is_edited)
   return (
     <Container>
       <div className="flex mb-5 gap-x-6">
@@ -43,21 +42,21 @@ const OrderDetail = () => {
           <BackButton>Order Details</BackButton>
           <div className="md:grid md:grid-cols-2 gap-5 px-4">
             <div className="max-w-full">
-              <EventCard data={data?.Event} />
+              <EventCard data={data?.event} />
               {data?.review.length > 0 && (
                 <div className="border-2 p-8 rounded-xl shadow-lg mt-5 max-md:mt-5 border-primaryColor">
                   <div className="flex justify-between items-center text-lg font-bold text-primaryColor mb-2">
                     Your Review
                     <div className="flex">
                       <AiFillStar className="mr-1 fill-yellow-500 h-[20px] w-[20px]" />
-                      <p className="text-base font-medium">5/5</p>
+                      <p className="text-base font-medium">{data.review[0].star}/5</p>
                     </div>
                   </div>
                   <p>{data?.review[0].comment}</p>
                   <button
                       className="w-27 mt-2 rounded text-primaryColor self-end disabled:opacity-50"
                       onClick={() => {navigate(`review`)}}
-                      disabled={data?.review[0]?.is_edited}
+                      disabled={data.review[0]?.isEdited}
                     >
                       Edit Review
                     </button>
@@ -99,12 +98,12 @@ const OrderDetail = () => {
                   <p>
                     {currencyFormat(
                       data?.qty *
-                        data?.Event.price
+                        data?.event.price
                     )}
                   </p>
                 </div>
                 <div className="flex flex-wrap justify-between">
-                  <p>Discount ({data?.Promotion !== null ? data?.Promotion.discount : 0}%)</p>
+                  <p>Discount ({data?.promotion !== null ? data?.promotion.discount : 0}%)</p>
                   <p>{currencyFormat(promoCalculation(data?.promotion_id))}</p>
                 </div>
                 <hr className="mt-4 mb-4" />
@@ -115,11 +114,11 @@ const OrderDetail = () => {
                     </p>
                     <p className="text-primaryColor font-bold text-xl">
                       {currencyFormat(
-                        (data?.qty * data?.Event.price) - promoCalculation(data?.promotion_id)
+                        (data?.qty * data?.event.price) - promoCalculation(data?.promotion_id)
                       )}
                     </p>
                   </div>
-                  {data?.review.length === 0 && moment(data?.Event.end_date, "DD-MM-YYYY HH:mm:ss").toDate() < new Date() && (
+                  {data?.review.length === 0 && moment(data?.event.end_date, "DD-MM-YYYY HH:mm:ss").toDate() < new Date() && (
                     <button
                       className="w-24 bg-primaryColor p-1 rounded text-white self-end"
                       onClick={() => {navigate(`review`)}}

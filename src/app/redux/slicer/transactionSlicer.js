@@ -55,5 +55,5 @@ const transactionSlicer = createSlice({
   },
 });
 
-export const { resetTransactionState } = transactionSlicer.reducer;
+export const { resetTransactionState } = transactionSlicer.actions;
 export default transactionSlicer.reducer;

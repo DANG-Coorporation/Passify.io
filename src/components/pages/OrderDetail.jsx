@@ -1,16 +1,40 @@
-import EventCard from "../organisms/EventCard";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { currencyFormat } from "../../utils/formatter";
 import { BackButton } from "../atoms/BackButton";
 import Container from "../atoms/Container";
+import EventCard from "../organisms/EventCard";
 import { AiFillStar } from "react-icons/ai";
+import {parseToken} from "../../utils/parseToken"
+import { getOrderList } from "../../api/orderList";
+import { calculateDiscount } from "../../utils/calculatePrice";
+import moment from "moment";
 
 
 const OrderDetail = () => {
-  const location = useLocation();
+  const params = useParams()
+  const [data, setData] = useState(null)
     const navigate = useNavigate()
-    const dataEvent = location.state.dataEvents
-    const dataTrans = location.state.dataTrans
+    useEffect(()=>{
+      async function getData() {
+        try{
+          const user = parseToken(localStorage.getItem("token"));
+          const param = {transaction_id : parseInt(params.orderId)}
+          const response = await getOrderList(user.id, param)
+          setData(response?.data[0])
+        }catch (e){
+          console.log(e)
+        }
+      }
+      getData();
+    },[])
+    const promoCalculation = (promo) => {
+      if(promo !== null){
+        return calculateDiscount((data?.qty*data?.event.price), data?.promotion.discount)
+      }else{
+        return 0
+      }
+    }
   return (
     <Container>
       <div className="flex mb-5 gap-x-6">
@@ -18,17 +42,24 @@ const OrderDetail = () => {
           <BackButton>Order Details</BackButton>
           <div className="md:grid md:grid-cols-2 gap-5 px-4">
             <div className="max-w-full">
-              <EventCard data={dataEvent} />
-              {dataTrans.review !== '' && (
+              <EventCard data={data?.event} />
+              {data?.review.length > 0 && (
                 <div className="border-2 p-8 rounded-xl shadow-lg mt-5 max-md:mt-5 border-primaryColor">
-                  <h1 className="flex justify-between items-center text-lg font-bold text-primaryColor mb-2">
+                  <div className="flex justify-between items-center text-lg font-bold text-primaryColor mb-2">
                     Your Review
                     <div className="flex">
                       <AiFillStar className="mr-1 fill-yellow-500 h-[20px] w-[20px]" />
-                      <p className="text-base font-medium">5/5</p>
+                      <p className="text-base font-medium">{data.review[0].star}/5</p>
                     </div>
-                  </h1>
-                  <p>{dataTrans.review}</p>
+                  </div>
+                  <p>{data?.review[0].comment}</p>
+                  <button
+                      className="w-27 mt-2 rounded text-primaryColor self-end disabled:opacity-50"
+                      onClick={() => {navigate(`review`)}}
+                      disabled={data.review[0]?.isEdited}
+                    >
+                      Edit Review
+                    </button>
                 </div>
               )}
             </div>
@@ -38,23 +69,23 @@ const OrderDetail = () => {
               </h1>
               <h1 className="font-normal text-base">Full Name</h1>
               <p className="mb-4 text-base font-semibold">
-                {dataTrans.name}
+                {data?.name}
               </p>
               <h1 className="font-normal text-base">Email</h1>
               <p className="mb-4 text-base font-semibold">
-                {dataTrans.email}
+                {data?.email}
               </p>
               <h1 className="font-normal text-base">Qty</h1>
               <p className="mb-4 text-base font-semibold">
-                {dataTrans.qty}
+                {data?.qty}
               </p>
               <h1 className="font-normal text-base">Your Referral Code</h1>
               <p className="mb-4 text-base font-semibold text-primaryColor">
-                {dataTrans.referral_code}
+                {data?.referral.length > 0 ? data.referral[0]?.referral_code : "-"}
               </p>
               <h1 className="font-normal text-base">Promotion Code</h1>
               <p className="mb-4 text-base font-semibold">
-                {dataTrans.promo_code === "" ? "-" : dataTrans.promo_code}
+                {data?.promotion_id === null ? "-" : data?.promotion_id}
               </p>
               <div>
                 <h3 className="text-md font-bold text-primaryColor mb-2">
@@ -62,18 +93,18 @@ const OrderDetail = () => {
                 </h3>
                 <div className="flex flex-wrap justify-between leading-8">
                   <p className="line-clamp-1">
-                    Pax x{dataTrans.qty}
+                    Pax x{data?.qty}
                   </p>
                   <p>
                     {currencyFormat(
-                      dataTrans.qty *
-                        dataEvent.price
+                      data?.qty *
+                        data?.event.price
                     )}
                   </p>
                 </div>
                 <div className="flex flex-wrap justify-between">
-                  <p>Discount</p>
-                  <p>{(0).toLocaleString("id-ID")}</p>
+                  <p>Discount ({data?.promotion !== null ? data?.promotion.discount : 0}%)</p>
+                  <p>{currencyFormat(promoCalculation(data?.promotion_id))}</p>
                 </div>
                 <hr className="mt-4 mb-4" />
                 <div className="flex flex-wrap justify-between">
@@ -83,12 +114,11 @@ const OrderDetail = () => {
                     </p>
                     <p className="text-primaryColor font-bold text-xl">
                       {currencyFormat(
-                        dataTrans.qty *
-                          dataEvent.price
+                        (data?.qty * data?.event.price) - promoCalculation(data?.promotion_id)
                       )}
                     </p>
                   </div>
-                  {new Date(dataEvent.end_date) <= new Date() && dataTrans.review === "" && (
+                  {data?.review.length === 0 && moment(data?.event.end_date, "DD-MM-YYYY HH:mm:ss").toDate() < new Date() && (
                     <button
                       className="w-24 bg-primaryColor p-1 rounded text-white self-end"
                       onClick={() => {navigate(`review`)}}

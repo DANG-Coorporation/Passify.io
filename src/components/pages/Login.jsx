@@ -10,15 +10,21 @@ import { useState } from "react";
 import { VisibilityButton } from "../atoms/visibilityButton";
 import { useEffect } from "react";
 import { setAuthorized } from "../../app/redux/slicer/loginSlicer";
+import Loading from "../atoms/loading";
+import { useLocation } from "react-router-dom";
+import { useRef } from "react";
 
 const Login = () => {
   // const [email, setEmail] = useState("");
   // const [password, setPassword] = useState("");
   const apiState = useSelector((state) => state.login.loading);
+  const apiRespond = useSelector((state) => state.login.respond);
   const [isVisible, setVisibility] = useState(false);
   const [isToast, setToast] = useState(false);
+  const fromDetailPage = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -37,9 +43,38 @@ const Login = () => {
     },
   });
 
+  const generateToast = () => {
+    if (fromDetailPage.current) {
+      return (
+        <Toast
+          header={"Authentication"}
+          caption={"Please log in first"}
+          variant={"error"}
+          dismissHandle={setToast}
+        />
+      );
+    } else {
+      return (
+        <Toast
+          header={apiRespond.message}
+          caption={apiRespond.error}
+          variant={"error"}
+          dismissHandle={setToast}
+        />
+      );
+    }
+  };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    if (location.state !== null) {
+      fromDetailPage.current = true;
+      setToast(true);
+    }
+  }, [location.state]);
+
   useEffect(() => {
     if (apiState === "done") {
-      console.log("authorized");
       dispatch(setAuthorized(true));
       dispatch(setLoading("idle"));
       navigate("/");
@@ -50,6 +85,7 @@ const Login = () => {
 
   return (
     <section className="flex-col lg:h-screen lg:items-center relative h-full">
+      {isToast ? generateToast() : null}
       <div className="w-full flex flex-wrap lg:h-screen lg:items-center">
         <div className="relative h-64 w-full sm:h-96 lg:h-full lg:w-1/2">
           <img
@@ -64,8 +100,8 @@ const Login = () => {
             <h1 className="text-2xl font-bold sm:text-3xl"> Welcome Back! </h1>
 
             <p className="mt-4 text-gray-500">
-              Welcome back! We're thrilled to have you here. Please log in to
-              access your account and unlock a world of exciting event
+              Welcome back! {"We're"} thrilled to have you here. Please log in
+              to access your account and unlock a world of exciting event
               experiences.
             </p>
           </div>
@@ -164,23 +200,14 @@ const Login = () => {
 
               <button
                 type="submit"
-                className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white"
+                className="rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white w-20 flex justify-center"
                 // onClick={submitLogin}
               >
-                Login
+                {apiState === "pending" ? <Loading size={5} /> : "Login"}
               </button>
             </div>
           </form>
         </div>
-
-        {isToast ? (
-          <Toast
-            header={"login Failed"}
-            caption={"Email or Password is invalid"}
-            variant={"error"}
-            dismissHandle={setToast}
-          />
-        ) : null}
       </div>
     </section>
   );

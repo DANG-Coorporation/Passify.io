@@ -1,15 +1,21 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { fetchEvents } from "../../app/redux/slicer/eventSlicer";
-const FeaturedEvent = () => {
-  // const apiState = useSelector((state) => state.event.loading);
-  const events = useSelector(state => state.event.events);
-  const dispatch = useDispatch();
+const EventExplore = () => {
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    dispatch(fetchEvents());
-  }, [dispatch]);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/events");
+        console.info(response.data.data);
+        setEvents(response.data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -29,7 +35,7 @@ const FeaturedEvent = () => {
               >
                 <img
                   className="rounded-t-xl h-[180px] w-full bg-center bg-contain"
-                  src={item.img_url}
+                  src={item.img}
                   alt="gambar event"
                 />
                 <div className="px-6 pb-8">
@@ -37,7 +43,7 @@ const FeaturedEvent = () => {
                     <Link to={`/events/${item.id}`}>{item.event_name}</Link>
                   </h2>
                   <p className="text-slate-600 mb-3 line-clamp-1 hover:line-clamp-none">
-                    {item.description}
+                    {item.desc}
                   </p>
                   <div className="flex flex-wrap">
                     <img src="" alt="" />
@@ -70,4 +76,4 @@ const FeaturedEvent = () => {
   );
 };
 
-export default FeaturedEvent;
+export default EventExplore;

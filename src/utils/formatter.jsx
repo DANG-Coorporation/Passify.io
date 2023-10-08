@@ -1,8 +1,9 @@
+import moment from "moment";
+
 export const dateFormat = (date) => {
-    let newDate = new Date(date).toLocaleDateString('en-GB', {day:"numeric",month:"short",year:"2-digit"})
-    return newDate
-}
+  return moment(date, "DD-MM-YYYY HH:mm:ss").format("DD MMM YYYY");
+};
 
 export const currencyFormat = (value) => {
-    return `IDR ${value.toLocaleString('id-ID')}`
-}
+  return `IDR ${value.toLocaleString("id-ID")}`;
+};

@@ -1,44 +1,46 @@
 import axios from "axios";
-import { useState } from "react";
+// import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const EventCreation = () => {
+  const [province, setProvince] = useState([]);
 
-  const [eventData, setEventData] = useState({
-    id:'',
-    user_id:1,
-    name: '',
-    start_date: '',
-    end_date: '2023-12-12',
-    start_time: '08:00 AM',
-    end_time: '12:00 AM',
-    location: '',
-    img_url: "/src/assets/img/event-7.jpg",
-    desc: '',
-    quota: 50,
-    price: 10000,
-  })
-
-  const setData = (e) => {
-    const {name, value} = e.target;
-
-    const parsedValue = name === "price" && !isNaN(value) ? parseFloat(value) : value;
-
-    setEventData({ ...eventData, [name]: parsedValue });
-
-  }
-
-  const createEventHandler = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        await axios.post('http://localhost:3000/events', eventData);
-        alert("Data Berhasil Ditambahkan!")
-
-        e.target.reset();
-
+        const response = await axios.get(
+          "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
+        );
+        setProvince(response.data);
+        console.info(province);
       } catch (error) {
-        console.error('Terjadi kesalahan saat menambahkan data acara:', error);
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const form = useRef();
+
+  const createEventHandler = async e => {
+    e.preventDefault();
+
+    const formData = new FormData(form.current);
+    formData.append("user_id", 1);
+
+    try {
+      await axios.post("http://localhost:5001/events", formData);
+      alert("Data Berhasil Ditambahkan!");
+
+      e.target.reset();
+    } catch (error) {
+      console.error("Terjadi kesalahan saat menambahkan data acara:", error);
+      if (error.response) {
+        console.error("Status Code:", error.response.status);
+        console.error("Response Data:", error.response.data);
       }
     }
+  };
 
   return (
     <section className="bg-gray-100 -mb-[130px]">
@@ -51,53 +53,179 @@ const EventCreation = () => {
             </h1>
           </div>
           <div className="rounded-lg bg-white p-8 shadow-lg lg:col-span-3 lg:p-12">
-            <form onSubmit={createEventHandler} className="space-y-4">
-            <label
-                htmlFor="event-title"
+            <form
+              ref={form}
+              onSubmit={createEventHandler}
+              className="space-y-4"
+            >
+              <label
+                htmlFor="event-name"
                 className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
               >
-                <span className="font-medium text-gray-700">
-                  {" "}
-                  Event Title{" "}
-                </span>
+                <span className="font-medium text-gray-700">Event Name</span>
 
                 <input
                   type="text"
-                  id="event-title"
-                  name="name"
+                  id="event-name"
+                  name="event_name"
                   placeholder="Event Title"
                   className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                  onChange={setData}
+                  required
                 />
               </label>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 pt-2 pb-4">
                 <div>
-                  <label className="sr-only" htmlFor="date">
-                    Date
-                  </label>
+                  <label htmlFor="event-category">Category</label>
+                  <select
+                    name="event_category"
+                    id="event-category"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm shadow-md"
+                    required
+                  >
+                    <option value="" disabled selected>
+                      Choose Category
+                    </option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="UIUX Design">UIUX Design</option>
+                    <option value="Graphic Design">Graphic Design</option>
+                    <option value="Product Management">
+                      Product Management
+                    </option>
+                  </select>
+                </div>{" "}
+                <div>
+                  <label htmlFor="ticket-type">Ticket Type</label>
+                  <select
+                    name="ticket_type"
+                    id="ticket-type"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm shadow-md"
+                    required
+                  >
+                    <option value="" disabled selected>
+                      Choose Ticket Type
+                    </option>
+                    <option value="Regular">Regular</option>
+                    <option value="VIP">VIP</option>
+                    <option value="On The Spot">On The Spot</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 pb-4">
+                <div>
+                  <label htmlFor="start-date">Event Start</label>
                   <input
                     className="w-full rounded-lg border-gray-200 p-3 text-sm shadow-md"
                     placeholder="Date"
                     type="Date"
                     name="start_date"
-                    id="date"
-                    onChange={setData}
+                    id="start-date"
+                    required
                   />
                 </div>
 
                 <div>
-                  <label className="sr-only" htmlFor="location">
-                    Location
-                  </label>
+                  <label htmlFor="end-date">Event End</label>
                   <input
                     className="w-full rounded-lg border-gray-200 p-3 text-sm shadow-md"
-                    placeholder="Location"
-                    name="location"
-                    type="loc"
-                    id="location"
-                    onChange={setData}
+                    placeholder="Date"
+                    type="Date"
+                    name="end_date"
+                    id="end-date"
+                    required
                   />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 pb-4">
+                <div>
+                  <label htmlFor="location">Location</label>
+                  <select
+                    name="location"
+                    id="location"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm shadow-md"
+                    required
+                  >
+                    <option value="" disabled selected>
+                      Choose Location
+                    </option>
+                    {province.map(item => (
+                      <option key={item.id} value={item.name}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="place">Place</label>
+                  <input
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm shadow-md"
+                    placeholder="Place"
+                    name="event_place"
+                    type="text"
+                    id="place"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="description">Event Description</label>
+                <input
+                  className="w-full rounded-lg border-gray-200 p-3 pb-52 text-sm shadow-md"
+                  type="text"
+                  name="description"
+                  placeholder="Event Description"
+                  rows="8"
+                  id="description"
+                  maxLength="250"
+                  cols="50"
+                  required
+                ></input>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="price"
+                    className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                  >
+                    <span className="font-medium text-gray-700">
+                      {" "}
+                      Event Price{" "}
+                    </span>
+
+                    <input
+                      type="number"
+                      id="price"
+                      name="price"
+                      placeholder="e.g 150000"
+                      className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                      required
+                      min="0"
+                    />
+                  </label>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="quota"
+                    className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                  >
+                    <span className="font-medium text-gray-700"> Quota </span>
+
+                    <input
+                      type="number"
+                      id="quota"
+                      name="quota"
+                      placeholder="e.g 10"
+                      className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                      required
+                      min="0"
+                    />
+                  </label>
                 </div>
               </div>
 
@@ -115,63 +243,28 @@ const EventCreation = () => {
                         htmlFor="photo-upload"
                         className="relative cursor-pointer rounded-md bg-white font-semibold text-primaryColor focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
                       >
-                        <span> Upload a Photo </span>
                         <input
-                          id="photo-upload"
-                          type="photo"
-                          name="img_url"
-                          className="sr-only"
-                          onChange={setData}
-    
+                          id="event-photo"
+                          type="file"
+                          accept=".jpg,.jpeg"
+                          name="img"
+                          required
                         />
                       </label>
-                      <p className="pl-1"> or drag and drop </p>
                     </div>
                     <p className="text-xs leading-5 text-gray-600">
-                      PNG, JPG, GIF up to 10MB
+                      JPG or JPEG 1 MB
                     </p>
                   </div>
                 </div>
               </div>
-              <label
-                htmlFor="price"
-                className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-              >
-                <span className="font-medium text-gray-700">
-                  {" "}
-                  Event Price{" "}
-                </span>
 
-                <input
-                  type="number"
-                  id="price"
-                  name="price"
-                  placeholder="e.g 150000"
-                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                  onChange={setData}
-                />
-              </label>
-              <div>
-                <label className="sr-only" htmlFor="message">
-                  Event Description
-                </label>
-
-                <textarea
-                  className="w-full rounded-lg border-gray-200 p-3 text-sm shadow-md"
-                  name="desc"
-                  placeholder="Event Description"
-                  rows="8"
-                  id="message"
-                  onChange={setData}
-                ></textarea>
-              </div>
-
-                <div className="mt-4">
+              <div className="mt-4">
                 <button
                   type="submit"
                   className="inline-block w-full rounded-lg bg-primaryColor hover:shadow-2xl px-5 py-3 font-medium text-white sm:w-auto shadow-md"
                 >
-                   Create Event
+                  Create Event
                 </button>
               </div>
             </form>
@@ -180,6 +273,6 @@ const EventCreation = () => {
       </div>
     </section>
   );
-}
+};
 
 export default EventCreation;

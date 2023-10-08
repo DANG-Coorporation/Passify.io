@@ -7,8 +7,9 @@ const EventExplore = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/events");
-        setEvents(response.data);
+        const response = await axios.get("http://localhost:5001/events");
+        console.info(response.data.data);
+        setEvents(response.data.data);
       } catch (error) {
         console.error(error);
       }
@@ -34,12 +35,12 @@ const EventExplore = () => {
               >
                 <img
                   className="rounded-t-xl h-[180px] w-full bg-center bg-contain"
-                  src={item.img_url}
+                  src={item.img}
                   alt="gambar event"
                 />
                 <div className="px-6 pb-8">
                   <h2 className="font-semibold text-2xl text-primaryColor mt-4 mb-3 line-clamp-2 hover:line-clamp-none">
-                    <Link to={`/events/${item.id}`}>{item.name}</Link>
+                    <Link to={`/events/${item.id}`}>{item.event_name}</Link>
                   </h2>
                   <p className="text-slate-600 mb-3 line-clamp-1 hover:line-clamp-none">
                     {item.desc}

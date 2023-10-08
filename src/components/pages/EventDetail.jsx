@@ -9,10 +9,10 @@ import { parseToken } from "../../utils/parseToken";
 import Loading from "../atoms/loading";
 const EventDetail = () => {
   const dispatch = useDispatch();
-  const eventDetails = useSelector((state) => state.event.event);
-  const isPermitted = useSelector((state) => state.transaction.isPermitted);
-  const isOwner = useSelector((state) => state.transaction.isOwner);
-  const apiState = useSelector((state) => state.transaction.loading);
+  const eventDetails = useSelector(state => state.event.event);
+  const isPermitted = useSelector(state => state.transaction.isPermitted);
+  const isOwner = useSelector(state => state.transaction.isOwner);
+  const apiState = useSelector(state => state.transaction.loading);
 
   const params = useParams();
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const EventDetail = () => {
           <div className="flex flex-wrap md:grid md:grid-cols-2 gap-5 pt-2 md:pt-6 -mb-6 px-4">
             <div className="w-full">
               <img
-                src={eventDetails.img_url}
+                src={eventDetails.img}
                 alt="gambar event"
                 className="rounded-xl hover:drop-shadow-2xl"
               />

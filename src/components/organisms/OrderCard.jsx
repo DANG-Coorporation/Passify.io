@@ -11,7 +11,6 @@ const OrderCard = (props) => {
       return 0
     }
   }
-  console.log(data)
   return (
     <div
       className="flex h-[110px] flex-row items-center overflow-hidden bg-white cursor-pointer rounded-xl my-1.5 mx-0 shadow-lg max-md:h-[210px] max-sm:h-[350px] max-sm:flex-col max-sm:w-full"
@@ -25,7 +24,7 @@ const OrderCard = (props) => {
         <div className="flex h-full flex-col justify-between max-md:w-full max-md:justify-start max-md:h-1/2">
           <p className="font-semibold">{data.event?.event_name}</p>
           <p className="font-medium text-primaryColor">
-            {dateFormat(data.event?.start_date)}
+            {dateFormat(data.event?.start_date) +" - "+ dateFormat(data.event?.end_date)}
           </p>
           <p>
             {data.qty}pax

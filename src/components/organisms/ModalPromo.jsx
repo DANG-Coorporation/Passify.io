@@ -1,7 +1,10 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { postPromo } from "../../api/promo";
+import { useParams } from "react-router-dom";
 const ModalPromo = (props) => {
   const today = new Date().toISOString().slice(0, 10);
+  const params = useParams()
   const formik = useFormik({
     initialValues: {
       promoName: "",
@@ -29,10 +32,24 @@ const ModalPromo = (props) => {
         .min(1, "Number must be greater than 0")
         .required("Required"),
     }),
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: async (values) => {
+      try {
+        const formValues = {
+          event_id: params.eventId,
+          promo_code: values.promoName,
+          start_date: values.startDate,
+          end_date: values.endDate,
+          discount: values.discount,
+          quota: values.quota
+        }
+        const response = await postPromo(formValues)
+        window.location.reload();
+      } catch (e) {
+        console.log(e)
+      }
     },
   });
+  
   return (
     <div className="fixed flex justify-center items-center w-full h-full top-0 left-0 bg-black bg-opacity-25 z-50">
       <form onSubmit={formik.handleSubmit}>
@@ -83,7 +100,7 @@ const ModalPromo = (props) => {
             ) : null}
           </label>
           <label className="p-0 m-0 flex flex-col">
-            Discount
+            Discount (%)
             <input
               id="discount"
               className="rounded p-2 border"

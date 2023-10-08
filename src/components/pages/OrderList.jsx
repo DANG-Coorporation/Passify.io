@@ -30,8 +30,6 @@ const OrderList = () => {
     setTabBarSelected(false);
   };
   const navigate = useNavigate();
-  const param = useParams();
-
   return (
     <Container>
       <BackButton>Your Orders</BackButton>

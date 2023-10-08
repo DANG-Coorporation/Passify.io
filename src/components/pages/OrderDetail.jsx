@@ -81,7 +81,7 @@ const OrderDetail = () => {
               </p>
               <h1 className="font-normal text-base">Your Referral Code</h1>
               <p className="mb-4 text-base font-semibold text-primaryColor">
-                {data?.referral[0].referral_code}
+                {data?.referral.length > 0 ? data.referral[0]?.referral_code : "-"}
               </p>
               <h1 className="font-normal text-base">Promotion Code</h1>
               <p className="mb-4 text-base font-semibold">

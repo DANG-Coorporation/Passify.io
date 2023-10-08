@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -10,10 +9,10 @@ import { parseToken } from "../../utils/parseToken";
 import Loading from "../atoms/loading";
 const EventDetail = () => {
   const dispatch = useDispatch();
-  const eventDetails = useSelector((state) => state.event.event);
-  const isPermitted = useSelector((state) => state.transaction.isPermitted);
-  const isOwner = useSelector((state) => state.transaction.isOwner);
-  const apiState = useSelector((state) => state.transaction.loading);
+  const eventDetails = useSelector(state => state.event.event);
+  const isPermitted = useSelector(state => state.transaction.isPermitted);
+  const isOwner = useSelector(state => state.transaction.isOwner);
+  const apiState = useSelector(state => state.transaction.loading);
 
   const params = useParams();
   const navigate = useNavigate();
@@ -29,28 +28,6 @@ const EventDetail = () => {
       );
     }
   }, [dispatch, params]);
-=======
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-const EventDetail = () => {
-  const params = useParams();
-  const [eventDetail, setEventDetail] = useState({});
-
-  useEffect(() => {
-    const fetchEventDetail = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5001/events/${params.id}`
-        );
-        setEventDetail(response.data.data);
-      } catch (error) {
-        console.info("axiosnya error");
-      }
-    };
-    fetchEventDetail();
-  }, [params]);
->>>>>>> Stashed changes
 
   return (
     <>
@@ -59,11 +36,7 @@ const EventDetail = () => {
           <div className="flex flex-wrap md:grid md:grid-cols-2 gap-5 pt-2 md:pt-6 -mb-6 px-4">
             <div className="w-full">
               <img
-<<<<<<< Updated upstream
-                src={eventDetails.img_url}
-=======
-                src={eventDetail.img}
->>>>>>> Stashed changes
+                src={eventDetails.img}
                 alt="gambar event"
                 className="rounded-xl hover:drop-shadow-2xl"
               />
@@ -79,11 +52,7 @@ const EventDetail = () => {
                       Judul Kegiatan
                     </dt>
                     <dd className="text-md text-gray-700 sm:col-span-2">
-<<<<<<< Updated upstream
                       {eventDetails.event_name}
-=======
-                      {eventDetail.event_name}
->>>>>>> Stashed changes
                     </dd>
                   </div>
 
@@ -92,11 +61,7 @@ const EventDetail = () => {
                       Deskripsi
                     </dt>
                     <dd className="text-md text-gray-700 sm:col-span-2">
-<<<<<<< Updated upstream
                       {eventDetails.description}
-=======
-                      {eventDetail.description}
->>>>>>> Stashed changes
                     </dd>
                   </div>
 
@@ -105,11 +70,7 @@ const EventDetail = () => {
                       Tanggal
                     </dt>
                     <dd className="text-md text-gray-700 sm:col-span-2">
-<<<<<<< Updated upstream
                       {new Date(eventDetails.start_date).toLocaleDateString(
-=======
-                      {new Date(eventDetail.start_date).toLocaleDateString(
->>>>>>> Stashed changes
                         "id-ID",
                         {
                           day: "numeric",
@@ -123,13 +84,8 @@ const EventDetail = () => {
                   <div className="grid grid-cols-1 gap-1 p-3 even:bg-gray-50 sm:grid-cols-3 sm:gap-4">
                     <dt className="text-lg font-medium text-gray-900">Biaya</dt>
                     <dd className="text-md text-gray-700 sm:col-span-2">
-<<<<<<< Updated upstream
                       {eventDetails.price
                         ? eventDetails.price.toLocaleString("id-ID", {
-=======
-                      {eventDetail.price
-                        ? eventDetail.price.toLocaleString("id-ID", {
->>>>>>> Stashed changes
                             style: "currency",
                             currency: "IDR",
                             minimumFractionDigits: 0,
@@ -140,7 +96,6 @@ const EventDetail = () => {
                   </div>
                 </dl>
               </div>
-<<<<<<< Updated upstream
               <button
                 disabled={!isPermitted || apiState === "pending"}
                 className={`${
@@ -167,13 +122,6 @@ const EventDetail = () => {
                   </span>
                 </div>
               ) : null}
-=======
-              <button className="bg-primaryColor text-white rounded-lg py-2 px-28 hover:shadow-2xl mt-9">
-                <Link to={`/events/${eventDetail.id}/registration`}>
-                  Beli Tiket
-                </Link>
-              </button>
->>>>>>> Stashed changes
             </div>
           </div>
         </div>

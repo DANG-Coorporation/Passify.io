@@ -1,35 +1,15 @@
-<<<<<<< Updated upstream
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchEvents } from "../../app/redux/slicer/eventSlicer";
 const FeaturedEvent = () => {
   // const apiState = useSelector((state) => state.event.loading);
-  const events = useSelector((state) => state.event.events);
+  const events = useSelector(state => state.event.events);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchEvents());
   }, [dispatch]);
-=======
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-const FeaturedEvent = () => {
-  const [events, setEvents] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/events");
-        setEvents(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchData();
-  }, []);
->>>>>>> Stashed changes
 
   return (
     <>
@@ -42,11 +22,7 @@ const FeaturedEvent = () => {
             Featured Event
           </h2>
           <div className="flex flex-wrap md:grid md:grid-cols-2 lg:grid-cols-4 gap-10 justify-center">
-<<<<<<< Updated upstream
-            {events.map((item) => (
-=======
             {events.map(item => (
->>>>>>> Stashed changes
               <div
                 className="rounded-xl w-full h-full shadow-lg hover:shadow-2xl"
                 key={item.id}
@@ -58,17 +34,10 @@ const FeaturedEvent = () => {
                 />
                 <div className="px-6 pb-8">
                   <h2 className="font-semibold text-2xl text-primaryColor mt-4 mb-3 line-clamp-2 hover:line-clamp-none">
-<<<<<<< Updated upstream
                     <Link to={`/events/${item.id}`}>{item.event_name}</Link>
                   </h2>
                   <p className="text-slate-600 mb-3 line-clamp-1 hover:line-clamp-none">
                     {item.description}
-=======
-                    <Link to={`/events/${item.id}`}>{item.name}</Link>
-                  </h2>
-                  <p className="text-slate-600 mb-3 line-clamp-1 hover:line-clamp-none">
-                    {item.desc}
->>>>>>> Stashed changes
                   </p>
                   <div className="flex flex-wrap">
                     <img src="" alt="" />
